@@ -7,53 +7,70 @@ import AccordionActions from '@mui/material/AccordionActions';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Button from '@mui/material/Button';
-import GamesInterface, {allGames} from "./GamesInterface";
+import GamesInterface, { allGames } from "./GamesInterface";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import {Grid} from "@mui/material";
+import Typography from '@mui/material/Typography';
+import {useState} from "react";
 
 function App() {
 
+    const [showCreateModal, setShowCreateModal] = useState(false)
+
     return (
         <div>
-            <h1>Where Were We</h1>
-            {
-                allGames.map((x:GamesInterface) => (
-                    <Accordion>
-                        <AccordionSummary
-                            expandIcon={"^"}
-                            aria-controls="panel1-content"
-                            id="panel1-header"
-                        >
-                        {x.title}
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Accordion>
-                            <AccordionSummary
-                                expandIcon={"^"}
-                                aria-controls="panel1-content"
-                                id="panel1-header"
-                            >
-                             Last Done
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                {x.lastDone}
-                            </AccordionDetails>
-                            </Accordion>
-
+            <Grid container spacing={2} sx={{ display:"flex", justifyContent: "center"}}>
+                <Grid item xs={12} sm={10} md={8} lg={6} xl={4} sx={{border: "1px solid red", display: "flex", justifyContent: "center" }}>
+                    <Typography variant="h3" >Where Were We</Typography>
+                </Grid>
+                <Grid item xs={10}>
+                    {
+                        allGames.map((x:GamesInterface) => (
                             <Accordion>
                                 <AccordionSummary
-                                    expandIcon={"^"}
+                                    expandIcon={ <ArrowUpwardIcon fontSize="medium" /> }
                                     aria-controls="panel1-content"
                                     id="panel1-header"
                                 >
-                                    Up Next
+                                    { x.title }
                                 </AccordionSummary>
                                 <AccordionDetails>
-                                    {x.upNext}
+                                    <Accordion>
+                                        <AccordionSummary
+                                            expandIcon={ <ArrowUpwardIcon fontSize="small" /> }
+                                            aria-controls="panel1-content"
+                                            id="panel1-header"
+                                        >
+                                            Last Done
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            { x.lastDone }
+                                        </AccordionDetails>
+                                    </Accordion>
+
+                                    <Accordion>
+                                        <AccordionSummary
+                                            expandIcon={ <ArrowUpwardIcon fontSize="small" /> }
+                                            aria-controls="panel1-content"
+                                            id="panel1-header"
+                                        >
+                                            Up Next
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            { x.upNext }
+                                        </AccordionDetails>
+                                    </Accordion>
                                 </AccordionDetails>
                             </Accordion>
-                        </AccordionDetails>
-                    </Accordion>
-                ))
-            }
+                        ))
+                    }
+                </Grid>
+            </Grid>
+
+            {/*{*/}
+            {/*    showCreateModal &&*/}
+            {/*    */}
+            {/*}*/}
         </div>
     );
 }
