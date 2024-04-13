@@ -1,7 +1,7 @@
 interface GamesInterface {
 	title: string;
-	lastDone: string;
-	upNext: string;
+	lastDone: string | undefined;
+	upNext: string | undefined;
 }
 
 export let allGames: GamesInterface[] = [

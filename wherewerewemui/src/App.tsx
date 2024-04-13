@@ -3,19 +3,42 @@
 import './App.css';
 import * as React from 'react';
 import Accordion from '@mui/material/Accordion';
-import AccordionActions from '@mui/material/AccordionActions';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Button from '@mui/material/Button';
 import GamesInterface, { allGames } from "./GamesInterface";
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import {Grid} from "@mui/material";
+import {Box, Dialog, DialogContent, Fade, FadeProps, Grid, TextField, BoxProps, Stack, Divider} from "@mui/material";
 import Typography from '@mui/material/Typography';
-import {useState} from "react";
+import {forwardRef, ReactElement, Ref, useState} from "react";
+import { Close } from '@mui/icons-material';
+import {styled} from '@mui/material/styles'
+
+const Transition = forwardRef(function Transition({
+    children,
+    ...rest
+}: 
+FadeProps & { children?: ReactElement<any, any> }, ref: Ref<unknown>) {
+    return (
+        <Fade ref={ref} {...rest}>
+            {children}
+        </Fade>
+    );
+});
+
+const Header = styled(Box)<BoxProps>(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(3, 4),
+    justifyContent: 'space-between',
+    backgroundColor: theme.palette.background.default
+}));
 
 function App() {
 
-    const [showCreateModal, setShowCreateModal] = useState(false)
+    const [gamesList, setGamesList] = useState<GamesInterface[]>(allGames);
+    const [gameName, setGameName] = useState<string>("");
+    const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
 
     return (
         <div>
@@ -25,7 +48,7 @@ function App() {
                 </Grid>
                 <Grid item xs={10}>
                     {
-                        allGames.map((x:GamesInterface) => (
+                        gamesList.map((x:GamesInterface) => (
                             <Accordion>
                                 <AccordionSummary
                                     expandIcon={ <ArrowUpwardIcon fontSize="medium" /> }
@@ -66,55 +89,53 @@ function App() {
                     }
                 </Grid>
             </Grid>
-
-            {/*{*/}
-            {/*    showCreateModal &&*/}
-            {/*    */}
-            {/*}*/}
+            <Button onClick={() => {setShowCreateModal(true)}}>Show Modal</Button>
+            <Dialog fullWidth open={showCreateModal} maxWidth='md' scroll='body' onClose={() => setShowCreateModal(false)}
+                TransitionComponent={Transition}> 
+                <Header style={{ display: 'flex', alignItems: 'start' }}>
+                    <Stack spacing={2} sx={{ width: '100%', ml: 1.5, mr: -4 }}>
+                        <Typography variant='h6'>Create Game</Typography>
+                        {/* Decrease space between the two  */}
+                        <Typography variant='caption'>
+                            <span style={{ fontStyle: 'italic' }}>Enter a game name</span>
+                        </Typography>
+                        <Divider />
+                    </Stack>
+                    <Close
+                        fontSize='small'
+                        onClick={
+                            () => {
+                                setShowCreateModal(false);
+                            }}
+                        sx={{ cursor: 'pointer'}} />
+                </Header>
+                <DialogContent sx={{ position: 'relative'}}>
+                    <Grid container spacing={ 6 }>
+                        <Grid item xs={ 12 }>
+                            <TextField sx={{ width: '100%' }} id="outlined-basic" placeholder="Enter A Game Name..." variant="outlined" onChange={(e) => {
+                                setGameName(e.target.value);
+                            }}>
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'right' }}>
+                            <Button sx={{mr: 2}} size='large' variant='outlined' color='secondary' onClick={ () => setShowCreateModal(false) }>
+                            Cancel
+                            </Button>
+                            <Button  color='primary' variant='contained' onClick={(e) => {
+                                const newGame: GamesInterface = {
+                                    title: gameName,
+                                    upNext: undefined,
+                                    lastDone: undefined
+                                }
+                                setGamesList(oldArray => [...oldArray, newGame]);
+                                setShowCreateModal(false);
+                        }}>Create</Button>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+            </Dialog>
         </div>
     );
-}
+};
 
 export default App;
-
-// <AccordionSummary
-//     expandIcon={"Hello"}
-//     aria-controls="panel1-content"
-//     id="panel1-header"
-// >
-//     Accordion 1
-// </AccordionSummary>
-// <AccordionDetails>
-//     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-//     malesuada lacus ex, sit amet blandit leo lobortis eget.
-// </AccordionDetails>
-// </Accordion>
-// <Accordion>
-//     <AccordionSummary
-//         expandIcon={"hello"}
-//         aria-controls="panel2-content"
-//         id="panel2-header"
-//     >
-//         Accordion 2
-//     </AccordionSummary>
-//     <AccordionDetails>
-//         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-//         malesuada lacus ex, sit amet blandit leo lobortis eget.
-//     </AccordionDetails>
-// </Accordion>
-// <Accordion defaultExpanded>
-//     <AccordionSummary
-//         expandIcon={"hello"}
-//         aria-controls="panel3-content"
-//         id="panel3-header"
-//     >
-//         Accordion Actions
-//     </AccordionSummary>
-//     <AccordionDetails>
-//         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-//         malesuada lacus ex, sit amet blandit leo lobortis eget.
-//     </AccordionDetails>
-//     <AccordionActions>
-//         <Button>Cancel</Button>
-//         <Button>Agree</Button>
-//     </AccordionActions>
