@@ -1,14 +1,43 @@
-import { Dialog } from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { Box, BoxProps, Button, Dialog, DialogContent, Divider, Fade, FadeProps, Grid, Stack, styled, TextField, Typography } from "@mui/material";
+import { forwardRef, ReactElement, Ref } from "react";
+import GamesInterface from "./GamesInterface";
+
+const Transition = forwardRef(function Transition({
+    children,
+    ...rest
+}: 
+FadeProps & { children?: ReactElement<any, any> }, ref: Ref<unknown>) {
+    return (
+        <Fade ref={ref} {...rest}>
+            {children}
+        </Fade>
+    );
+});
+
+const Header = styled(Box)<BoxProps>(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(3, 4),
+    justifyContent: 'space-between',
+    backgroundColor: theme.palette.background.default
+}));
 
 interface DialogBoxProps {
     addGameModal: boolean,
     addUpNextModal: boolean,
     addLastDone: boolean,
-    closeModal : (showModal:boolean) => void
+    showModal: boolean
+    closeModal : (arg:boolean) => void
+    gamesList: GamesInterface[]
+    gameName: string
+    setGameName: (arg: string) => void
+    setGamesList: (arg: GamesInterface[]) => void
+    
 }
 
 
-const DialogBox = ({addGameModal,addUpNextModal,addLastDone, closeModal}: DialogBoxProps) => {
+const DialogBox = ({addGameModal,addUpNextModal,addLastDone, closeModal, showModal, gamesList, gameName, setGameName, setGamesList}: DialogBoxProps) => {
     
     return (
         
@@ -29,7 +58,7 @@ const DialogBox = ({addGameModal,addUpNextModal,addLastDone, closeModal}: Dialog
                             fontSize='small'
                             onClick={
                                 () => {
-                                    setShowCreateModal(false);
+                                    closeModal(false);
                                 }}
                             sx={{ cursor: 'pointer'}} />
                     </Header>
@@ -42,7 +71,7 @@ const DialogBox = ({addGameModal,addUpNextModal,addLastDone, closeModal}: Dialog
                                 </TextField>
                             </Grid>
                             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'right' }}>
-                                <Button sx={{mr: 2}} size='large' variant='outlined' color='secondary' onClick={ () => setShowCreateModal(false) }>
+                                <Button sx={{mr: 2}} size='large' variant='outlined' color='secondary' onClick={ () => closeModal(false) }>
                                 Cancel
                                 </Button>
                                 <Button  color='primary' variant='contained' onClick={(e) => {
@@ -51,8 +80,8 @@ const DialogBox = ({addGameModal,addUpNextModal,addLastDone, closeModal}: Dialog
                                         upNext: [""],
                                         lastDone: [""],
                                     }
-                                    setGamesList(oldArray => [...oldArray, newGame]);
-                                    setShowCreateModal(false);
+                                    setGamesList(gamesList:GamesInterface[] => [...gamesList, newGame]);
+                                    closeModal(false);
                             }}>Create</Button>
                             </Grid>
                         </Grid>

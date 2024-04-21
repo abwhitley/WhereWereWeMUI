@@ -191,7 +191,7 @@
                 </Dialog>
                 <Button onClick={() => setShowModal(true)}>Click Me</Button>
                 {
-                    showModal ? <DialogBox addGameModal={true} addUpNextModal={false} addLastDone={false} closeModal={setShowCreateModal}/> : null
+                    showModal ? <DialogBox addGameModal={true} addUpNextModal={false} addLastDone={false} closeModal={setShowCreateModal} showModal={showModal} gameName={gameName} gamesList={gamesList} setGameName={setGameName} setGamesList={setGamesList}/> : null
                 }
             </div>
         );
