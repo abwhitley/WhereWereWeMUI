@@ -41,12 +41,10 @@
         const [gamesList, setGamesList] = useState<GamesInterface[]>(allGames);
         const [gameName, setGameName] = useState<string>("");
         const [newUpNext, setNewUpNext] = useState<string>("");
-        const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
-        const [showCreateModal2, setShowCreateModal2] = useState<boolean>(false);
-        const [targetedGame, setTargetedGame] = useState(allGames[0])
-        const [showModal, setShowModal] = useState(false);
-
-
+        const [showGameModal, setShowGameModal] = useState<boolean>(false);
+        const [showLastDoneModal, setShowLastDoneModal] = useState<boolean>(false);
+        const [showUpNextModal, setShowUpNextModal] = useState<boolean>(false);
+        const [targetedGame, setTargetedGame] = useState(allGames[0]);
 
         return (
             <div>
@@ -74,7 +72,11 @@
                                             >
                                                 Last Done
                                             </AccordionSummary>
-                                            <Button>+</Button>
+                                            <Button onClick={() => {
+                                                setTargetedGame(singleGame)
+                                                setShowLastDoneModal(true)
+                                            }}>+</Button>
+                                            <DialogBox showGameModal={showGameModal} setShowGameModal={setShowGameModal} showLastDoneModal={showLastDoneModal} setShowLastDoneModal={setShowLastDoneModal} showUpNextModal={showUpNextModal} setShowUpNextModal={setShowUpNextModal} gameName={gameName} setGameName={setGameName} gamesList={gamesList} setGamesList={setGamesList} targetedGame={targetedGame}/>
                                             {
                                                 singleGame.lastDone.map((task) => (
                                                     <AccordionDetails>{task}</AccordionDetails>
@@ -91,9 +93,11 @@
                                                 Up Next
                                             </AccordionSummary>
                                             <Button onClick={() => {
-                                                setShowCreateModal2(true)
                                                 setTargetedGame(singleGame)
-                                                }}>+</Button>
+                                                setShowUpNextModal(true)
+                                            }}>+</Button>
+    
+                                            <DialogBox showGameModal={showGameModal} setShowGameModal={setShowGameModal} showLastDoneModal={showLastDoneModal} setShowLastDoneModal={setShowLastDoneModal} showUpNextModal={showUpNextModal} setShowUpNextModal={setShowUpNextModal} gameName={gameName} setGameName={setGameName} gamesList={gamesList} setGamesList={setGamesList} targetedGame={targetedGame}/>
                                             {
                                                 singleGame.upNext.map((task) => (
                                                     <AccordionDetails>{task}</AccordionDetails>
@@ -105,96 +109,106 @@
                             ))
                         }
                     </Grid>
-                </Grid>
-                <Button onClick={() => {setShowCreateModal(true)}}>Show Modal</Button>
-                <Dialog fullWidth open={showCreateModal} maxWidth='md' scroll='body' onClose={() => setShowCreateModal(false)}
-                    TransitionComponent={Transition}> 
-                    <Header style={{ display: 'flex', alignItems: 'start' }}>
-                        <Stack spacing={2} sx={{ width: '100%', ml: 1.5, mr: -4 }}>
-                            <Typography variant='h6'>Create Game</Typography>
-                            {/* Decrease space between the two  */}
-                            <Typography variant='caption'>
-                                <span style={{ fontStyle: 'italic' }}>Enter a game name</span>
-                            </Typography>
-                            <Divider />
-                        </Stack>
-                        <Close
-                            fontSize='small'
-                            onClick={
-                                () => {
-                                    setShowCreateModal(false);
-                                }}
-                            sx={{ cursor: 'pointer'}} />
-                    </Header>
-                    <DialogContent sx={{ position: 'relative'}}>
-                        <Grid container spacing={ 6 }>
-                            <Grid item xs={ 12 }>
-                                <TextField sx={{ width: '100%' }} id="outlined-basic" placeholder="Enter A Game Name..." variant="outlined" onChange={(e) => {
-                                    setGameName(e.target.value);
-                                }}>
-                                </TextField>
-                            </Grid>
-                            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'right' }}>
-                                <Button sx={{mr: 2}} size='large' variant='outlined' color='secondary' onClick={ () => setShowCreateModal(false) }>
-                                Cancel
-                                </Button>
-                                <Button  color='primary' variant='contained' onClick={(e) => {
-                                    const newGame: GamesInterface = {
-                                        title: gameName,
-                                        upNext: [""],
-                                        lastDone: [""],
-                                    }
-                                    setGamesList(oldArray => [...oldArray, newGame]);
-                                    setShowCreateModal(false);
-                            }}>Create</Button>
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                </Dialog>
-                <Dialog fullWidth open={showCreateModal2} maxWidth='md' scroll='body' onClose={() => setShowCreateModal2(false)}
-                    TransitionComponent={Transition}> 
-                    <Header style={{ display: 'flex', alignItems: 'start' }}>
-                        <Stack spacing={2} sx={{ width: '100%', ml: 1.5, mr: -4 }}>
-                            <Typography variant='h6'>Add Up Next</Typography>
-                            {/* Decrease space between the two  */}
-                            <Typography variant='caption'>
-                                <span style={{ fontStyle: 'italic' }}>Enter the last thing you finsihed in the game</span>
-                            </Typography>
-                            <Divider />
-                        </Stack>
-                        <Close
-                            fontSize='small'
-                            onClick={
-                                () => {
-                                    setShowCreateModal2(false);
-                                }}
-                            sx={{ cursor: 'pointer'}} />
-                    </Header>
-                    <DialogContent sx={{ position: 'relative'}}>
-                        <Grid container spacing={ 6 }>
-                            <Grid item xs={ 12 }>
-                                <TextField sx={{ width: '100%' }} id="outlined-basic" placeholder="Enter Last Done..." variant="outlined" onChange={(e) => {
-                                    setNewUpNext(e.target.value);
-                                }} />
-                            </Grid>
-                            <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'right' }}>
-                                <Button sx={{mr: 2}} size='large' variant='outlined' color='secondary' onClick={ () => setShowCreateModal2(false) }>
-                                Cancel This
-                                </Button>
-                                <Button  color='primary' variant='contained' onClick={(e) => {
-                                    targetedGame.upNext.push(newUpNext);
-                                    setShowCreateModal2(false)
-                            }}>Add</Button>
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                </Dialog>
-                <Button onClick={() => setShowModal(true)}>Click Me</Button>
+                </Grid>                
+                
+                <Button onClick={() => setShowGameModal(true)}>Create Game</Button>
                 {
-                    showModal ? <DialogBox addGameModal={true} addUpNextModal={false} addLastDone={false} closeModal={setShowCreateModal} showModal={showModal} gameName={gameName} gamesList={gamesList} setGameName={setGameName} setGamesList={setGamesList}/> : null
+                    showGameModal ? <DialogBox showGameModal={true} setShowGameModal={setShowGameModal} showLastDoneModal={false} setShowLastDoneModal={setShowLastDoneModal} showUpNextModal={false} setShowUpNextModal={setShowUpNextModal} gameName={gameName} setGameName={setGameName} gamesList={gamesList} setGamesList={setGamesList} targetedGame={targetedGame} /> : null
                 }
             </div>
         );
     };
 
     export default App;
+
+
+
+
+
+
+
+
+    // <Dialog fullWidth open={showCreateModal2} maxWidth='md' scroll='body' onClose={() => setShowCreateModal2(false)}
+    //                 TransitionComponent={Transition}> 
+    //                 <Header style={{ display: 'flex', alignItems: 'start' }}>
+    //                     <Stack spacing={2} sx={{ width: '100%', ml: 1.5, mr: -4 }}>
+    //                         <Typography variant='h6'>Add Up Next</Typography>
+    //                         {/* Decrease space between the two  */}
+    //                         <Typography variant='caption'>
+    //                             <span style={{ fontStyle: 'italic' }}>Enter the last thing you finsihed in the game</span>
+    //                         </Typography>
+    //                         <Divider />
+    //                     </Stack>
+    //                     <Close
+    //                         fontSize='small'
+    //                         onClick={
+    //                             () => {
+    //                                 setShowCreateModal2(false);
+    //                             }}
+    //                         sx={{ cursor: 'pointer'}} />
+    //                 </Header>
+    //                 <DialogContent sx={{ position: 'relative'}}>
+    //                     <Grid container spacing={ 6 }>
+    //                         <Grid item xs={ 12 }>
+    //                             <TextField sx={{ width: '100%' }} id="outlined-basic" placeholder="Enter Last Done..." variant="outlined" onChange={(e) => {
+    //                                 setNewUpNext(e.target.value);
+    //                             }} />
+    //                         </Grid>
+    //                         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'right' }}>
+    //                             <Button sx={{mr: 2}} size='large' variant='outlined' color='secondary' onClick={ () => setShowCreateModal2(false) }>
+    //                             Cancel This
+    //                             </Button>
+    //                             <Button  color='primary' variant='contained' onClick={(e) => {
+    //                                 targetedGame.upNext.push(newUpNext);
+    //                                 setShowCreateModal2(false)
+    //                         }}>Add</Button>
+    //                         </Grid>
+    //                     </Grid>
+    //                 </DialogContent>
+    //             </Dialog>
+
+
+    // <Dialog fullWidth open={showCreateModal} maxWidth='md' scroll='body' onClose={() => setShowCreateModal(false)}
+    //                 TransitionComponent={Transition}> 
+    //                 <Header style={{ display: 'flex', alignItems: 'start' }}>
+    //                     <Stack spacing={2} sx={{ width: '100%', ml: 1.5, mr: -4 }}>
+    //                         <Typography variant='h6'>Create Game</Typography>
+    //                         {/* Decrease space between the two  */}
+    //                         <Typography variant='caption'>
+    //                             <span style={{ fontStyle: 'italic' }}>Enter a game name</span>
+    //                         </Typography>
+    //                         <Divider />
+    //                     </Stack>
+    //                     <Close
+    //                         fontSize='small'
+    //                         onClick={
+    //                             () => {
+    //                                 setShowCreateModal(false);
+    //                             }}
+    //                         sx={{ cursor: 'pointer'}} />
+    //                 </Header>
+    //                 <DialogContent sx={{ position: 'relative'}}>
+    //                     <Grid container spacing={ 6 }>
+    //                         <Grid item xs={ 12 }>
+    //                             <TextField sx={{ width: '100%' }} id="outlined-basic" placeholder="Enter A Game Name..." variant="outlined" onChange={(e) => {
+    //                                 setGameName(e.target.value);
+    //                             }}>
+    //                             </TextField>
+    //                         </Grid>
+    //                         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'right' }}>
+    //                             <Button sx={{mr: 2}} size='large' variant='outlined' color='secondary' onClick={ () => setShowCreateModal(false) }>
+    //                             Cancel
+    //                             </Button>
+    //                             <Button  color='primary' variant='contained' onClick={(e) => {
+    //                                 const newGame: GamesInterface = {
+    //                                     title: gameName,
+    //                                     upNext: [""],
+    //                                     lastDone: [""],
+    //                                 }
+    //                                 setGamesList(oldArray => [...oldArray, newGame]);
+    //                                 setShowCreateModal(false);
+    //                         }}>Create</Button>
+    //                         </Grid>
+    //                     </Grid>
+    //                 </DialogContent>
+    //             </Dialog>
